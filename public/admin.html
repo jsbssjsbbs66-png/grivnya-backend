@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Гривня — панель адміна</title>
+<style>
+  :root { --bg:#F6F3EC; --surface:#fff; --border:#DDD6C7; --fg:#16231C; --fg-muted:#5B6A61; --primary:#0E8F5E; --danger:#C0392B; --good:#1E8E5A; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; padding:24px 16px 80px; }
+  .wrap { max-width: 760px; margin: 0 auto; }
+  h1 { font-size:20px; margin: 0 0 4px; }
+  .sub { color: var(--fg-muted); font-size: 13.5px; margin: 0 0 24px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 18px; margin-bottom: 14px; }
+  input { width:100%; padding:11px 13px; border-radius:10px; border:1px solid var(--border); font-size:15px; margin-bottom:10px; font-family:inherit; }
+  button { font-family: inherit; font-size: 14px; font-weight:600; border-radius: 10px; padding: 10px 16px; cursor:pointer; border:1px solid var(--border); background:#fff; }
+  button.primary { background: var(--primary); color:#fff; border-color: var(--primary); }
+  button.danger { background: var(--danger); color:#fff; border-color: var(--danger); }
+  button:disabled { opacity:.5; cursor:default; }
+  .stats { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:18px; }
+  .stat { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:12px 16px; flex:1; min-width:120px; }
+  .stat b { display:block; font-size:22px; font-family: ui-monospace, monospace; }
+  .stat span { font-size:12px; color:var(--fg-muted); }
+  .sub-row { display:flex; justify-content:space-between; gap:12px; align-items:flex-start; padding:14px 0; border-bottom:1px solid var(--border); }
+  .sub-row:last-child { border-bottom:none; }
+  .sub-row .meta { font-size:13px; color:var(--fg-muted); margin-top:4px; }
+  .sub-row .title { font-weight:600; font-size:14.5px; }
+  .sub-row .actions { display:flex; gap:8px; flex:none; }
+  .sub-row a { color: var(--primary); font-size: 12.5px; }
+  .empty { color: var(--fg-muted); text-align:center; padding: 30px 0; font-size:14px; }
+  .err { color: var(--danger); font-size: 13.5px; margin-bottom:10px; }
+  #logoutBtn { float:right; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div id="loginView" class="card" style="max-width:360px;margin:60px auto;">
+    <h1>Вхід адміністратора</h1>
+    <p class="sub">Перевірка виконаних завдань — «Гривня»</p>
+    <div id="loginErr" class="err" hidden></div>
+    <input id="pwd" type="password" placeholder="Пароль адміністратора" autocomplete="current-password">
+    <button class="primary" id="loginBtn" style="width:100%">Увійти</button>
+  </div>
+
+  <div id="panelView" hidden>
+    <h1>Перевірка завдань <button id="logoutBtn">Вийти</button></h1>
+    <p class="sub">Заявки чекають реального підтвердження людиною — жодне нарахування не відбувається автоматично.</p>
+    <div class="stats" id="stats"></div>
+    <div class="card">
+      <div id="list"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var loginView = document.getElementById("loginView");
+  var panelView = document.getElementById("panelView");
+
+  async function api(path, opts) {
+    var res = await fetch("/api/admin" + path, Object.assign({ headers: { "Content-Type": "application/json" } }, opts || {}));
+    var data = await res.json().catch(function () { return {}; });
+    if (!res.ok) throw new Error(data.error || "Помилка запиту");
+    return data;
+  }
+
+  document.getElementById("loginBtn").addEventListener("click", async function () {
+    var pwd = document.getElementById("pwd").value;
+    var err = document.getElementById("loginErr");
+    err.hidden = true;
+    try {
+      await api("/login", { method: "POST", body: JSON.stringify({ password: pwd }) });
+      showPanel();
+    } catch (e) {
+      err.textContent = e.message;
+      err.hidden = false;
+    }
+  });
+  document.getElementById("pwd").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") document.getElementById("loginBtn").click();
+  });
+
+  document.getElementById("logoutBtn").addEventListener("click", async function () {
+    await api("/logout", { method: "POST" });
+    panelView.hidden = true;
+    loginView.hidden = false;
+  });
+
+  async function showPanel() {
+    loginView.hidden = true;
+    panelView.hidden = false;
+    await refresh();
+  }
+
+  async function refresh() {
+    try {
+      var stats = await api("/stats");
+      document.getElementById("stats").innerHTML =
+        stat(stats.users, "користувачів") +
+        stat(stats.pending, "на перевірці") +
+        stat(stats.approved, "підтверджено") +
+        stat(stats.withdrawalsPending, "заявок на виведення (" + fmt(stats.withdrawalsPendingAmount) + " ₴)");
+
+      var data = await api("/submissions?status=pending");
+      var list = document.getElementById("list");
+      if (!data.submissions.length) {
+        list.innerHTML = '<div class="empty">Немає заявок на перевірці 🎉</div>';
+        return;
+      }
+      list.innerHTML = data.submissions.map(function (s) {
+        return '<div class="sub-row" data-id="' + s.id + '">' +
+          '<div><div class="title">' + escapeHtml(s.task_title) + '</div>' +
+          '<div class="meta">' + escapeHtml(s.user_email) + ' · ' + s.submitted_at + ' · +' + s.amount + ' ₴ · <a href="' + s.link + '" target="_blank" rel="noopener">перевірити посилання ↗</a></div></div>' +
+          '<div class="actions"><button class="primary" data-act="approve">Підтвердити</button>' +
+          '<button class="danger" data-act="reject">Відхилити</button></div></div>';
+      }).join("");
+    } catch (e) {
+      if (String(e.message).indexOf("адміністратора") !== -1) {
+        panelView.hidden = true;
+        loginView.hidden = false;
+      }
+    }
+  }
+
+  function stat(n, label) {
+    return '<div class="stat"><b>' + n + '</b><span>' + label + '</span></div>';
+  }
+  function fmt(n) { return (n || 0).toLocaleString("uk-UA"); }
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  document.getElementById("list").addEventListener("click", async function (e) {
+    var btn = e.target.closest("button[data-act]");
+    if (!btn) return;
+    var row = btn.closest(".sub-row");
+    var id = row.dataset.id;
+    btn.disabled = true;
+    try {
+      await api("/submissions/" + id + "/" + btn.dataset.act, { method: "POST" });
+      await refresh();
+    } catch (e2) {
+      alert(e2.message);
+      btn.disabled = false;
+    }
+  });
+
+  // Якщо кука адміна вже валідна (перезавантаження сторінки) — одразу показати панель.
+  api("/stats").then(showPanel).catch(function () {});
+})();
+</script>
+</body>
+</html>

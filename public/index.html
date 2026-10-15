@@ -1,0 +1,761 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Гривня 🇺🇦 — тестова версія</title>
+<meta name="description" content="Гривня — виконуй прості завдання (лайки, перегляди, дії) і отримуй гроші на баланс. Тестова версія з чесними умовами.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap">
+<style>
+  :root {
+    --bg: #F6F3EC; --surface: #FFFFFF; --surface-alt: #EFEAE0;
+    --fg: #16231C; --fg-muted: #5B6A61; --border: #DDD6C7;
+    --primary: #0E8F5E; --primary-ink: #FFFFFF; --primary2: #3457D5; --primary2-ink: #FFFFFF;
+    --accent: #C97A1F; --accent-ink: #1A1206; --good: #1E8E5A; --danger: #C14C3A;
+    --shadow: 0 1px 2px rgba(22,35,28,.07), 0 10px 28px rgba(22,35,28,.09);
+    --font-display: 'Fraunces', Georgia, serif; --font-body: 'Work Sans', system-ui, -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', monospace;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0E1512; --surface: #15201A; --surface-alt: #1C2821; --fg: #ECF2EE; --fg-muted: #9AAAA1; --border: #283830;
+      --primary: #2FA873; --primary-ink: #052015; --primary2: #6B86E8; --primary2-ink: #0A1033;
+      --accent: #C97A33; --accent-ink: #231703; --good: #39BB85; --danger: #E27465;
+      --shadow: 0 1px 2px rgba(0,0,0,.35), 0 10px 28px rgba(0,0,0,.45); color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0E1512; --surface: #15201A; --surface-alt: #1C2821; --fg: #ECF2EE; --fg-muted: #9AAAA1; --border: #283830;
+    --primary: #2FA873; --primary-ink: #052015; --primary2: #6B86E8; --primary2-ink: #0A1033;
+    --accent: #C97A33; --accent-ink: #231703; --good: #39BB85; --danger: #E27465;
+    --shadow: 0 1px 2px rgba(0,0,0,.35), 0 10px 28px rgba(0,0,0,.45); color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background: var(--bg); color: var(--fg); font-family: var(--font-body); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); position: relative; }
+  .grain { position: fixed; inset: 0; pointer-events: none; z-index: 999; opacity: .035; mix-blend-mode: overlay; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+  .flag-bar { height: 3px; width: 100%; background: linear-gradient(90deg, #0057B7 0%, #2C7BD1 40%, #FFD700 65%, #FFD700 100%); }
+  h1, h2, h3 { font-family: var(--font-display); font-weight: 600; text-wrap: balance; margin: 0; }
+  p { margin: 0; line-height: 1.55; }
+  .mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+  button { font-family: inherit; cursor: pointer; }
+  a { color: var(--primary); }
+  :focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+  .wrap { max-width: 1040px; margin: 0 auto; }
+
+  nav.topbar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 50; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+  nav.topbar .inner { max-width: 1040px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 14px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-family: var(--font-display); font-weight: 700; font-size: 21px; }
+  .brand-mark { width: 30px; height: 30px; flex: none; display: block; }
+  .brand-word { font-family: var(--font-display); font-style: italic; font-weight: 700; letter-spacing: -0.01em; background: linear-gradient(100deg, var(--primary), var(--primary2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .navlinks { display: flex; gap: 4px; }
+  .navlinks button { position: relative; background: none; border: none; color: var(--fg-muted); font-size: 14.5px; font-weight: 500; padding: 8px 14px; border-radius: 10px; transition: color .15s; }
+  .navlinks button::after { content: ""; position: absolute; left: 14px; right: 14px; bottom: 3px; height: 2px; border-radius: 2px; background: var(--primary); transform: scaleX(0); transition: transform .2s ease; transform-origin: left; }
+  .navlinks button:hover { color: var(--fg); }
+  .navlinks button[aria-current="page"] { color: var(--fg); font-weight: 600; }
+  .navlinks button[aria-current="page"]::after { transform: scaleX(1); }
+  .nav-right { display: flex; align-items: center; gap: 10px; }
+  .nav-balance { display: flex; align-items: center; gap: 8px; background: var(--surface); border: 1px solid var(--border); border-radius: 100px; padding: 6px 14px 6px 8px; box-shadow: var(--shadow); }
+  .nav-balance .dot { width: 20px; height: 20px; border-radius: 50%; background: var(--accent); display: grid; place-items: center; font-size: 11px; color: var(--accent-ink); font-weight: 700; }
+  .nav-balance .amt { font-family: var(--font-mono); font-weight: 600; font-size: 14.5px; }
+  .theme-toggle, .icon-btn { width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--border); background: var(--surface); display: grid; place-items: center; font-size: 15px; color: var(--fg); flex: none; transition: background .15s, transform .12s; }
+  .theme-toggle:hover, .icon-btn:hover { background: var(--surface-alt); }
+  .theme-toggle:active, .icon-btn:active { transform: scale(.92); }
+
+  main { max-width: 1040px; margin: 0 auto; padding-block: 36px 72px; }
+  section[data-view] { display: none; }
+  section[data-view].active { display: block; animation: rise .35s ease both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  @media (prefers-reduced-motion: reduce) { section[data-view].active { animation: none; } }
+
+  .bleed { margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw); padding-left: calc(50vw - 50%); padding-right: calc(50vw - 50%); }
+  .kicker { display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--fg-muted); padding-bottom: 6px; margin-bottom: 14px; border-bottom: 2px solid var(--primary); }
+  .kicker-alt { border-bottom-color: var(--primary2); }
+
+  .hero-band { background: var(--surface-alt); padding-block: 1px; }
+  .hero { display: grid; grid-template-columns: 1.1fr .9fr; gap: 40px; align-items: center; padding-block: 36px 48px; position: relative; }
+  .hero-watermark { position: absolute; top: -12%; right: -2%; z-index: -1; pointer-events: none; user-select: none; font-family: var(--font-display); font-weight: 700; font-size: clamp(160px, 22vw, 320px); line-height: 1; color: var(--fg); opacity: .045; }
+  @media (max-width: 760px) { .hero { grid-template-columns: 1fr; } .hero-watermark { display: none; } }
+  .eyebrow { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--primary); background: color-mix(in srgb, var(--primary) 12%, var(--surface)); border-radius: 100px; padding: 5px 12px; margin-bottom: 16px; }
+  .hero h1 { font-size: clamp(32px, 5vw, 50px); line-height: 1.06; margin-bottom: 18px; }
+  .hero h1 .accent { font-style: italic; color: var(--primary); }
+  .hero .lede { font-size: 17px; color: var(--fg-muted); max-width: 46ch; margin-bottom: 26px; }
+  .cta-row { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; border-radius: 12px; padding: 13px 22px; font-weight: 600; font-size: 15px; border: 1px solid transparent; transition: transform .12s, box-shadow .12s; }
+  .btn:active { transform: scale(.98); }
+  .btn-primary { background: var(--primary); color: var(--primary-ink); box-shadow: var(--shadow); }
+  .btn-primary:hover { box-shadow: 0 14px 30px rgba(15,107,79,.25); }
+  .btn-ghost { background: var(--surface); color: var(--fg); border-color: var(--border); }
+  .btn-ghost:hover { background: var(--surface-alt); }
+  .btn[disabled] { opacity: .5; cursor: not-allowed; }
+  .btn-block { width: 100%; justify-content: center; }
+  .hero-card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 24px; box-shadow: var(--shadow); position: relative; overflow: hidden; }
+  .stamp { position: absolute; top: 14px; right: 14px; z-index: 2; width: 62px; height: 62px; border-radius: 50%; border: 2px dashed var(--primary); display: flex; align-items: center; justify-content: center; text-align: center; transform: rotate(-9deg); font-family: var(--font-display); font-weight: 700; font-size: 9.5px; letter-spacing: .03em; text-transform: uppercase; color: var(--primary); line-height: 1.2; padding: 4px; background: color-mix(in srgb, var(--primary) 6%, var(--surface)); }
+  .hero-card .label { font-size: 13px; color: var(--fg-muted); font-weight: 500; }
+  .hero-card .num { font-family: var(--font-mono); font-size: 42px; font-weight: 700; margin-block: 6px 16px; position: relative; }
+  .mini-task { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-top: 1px solid var(--border); font-size: 14px; }
+  .mini-task:first-of-type { border-top: none; }
+  .mini-task .ic { width: 30px; height: 30px; border-radius: 9px; background: var(--surface-alt); display: grid; place-items: center; flex: none; font-size: 15px; }
+  .mini-task .t { flex: 1; min-width: 0; }
+  .mini-task .t .tt { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mini-task .p { font-family: var(--font-mono); font-weight: 600; color: var(--primary); }
+
+  .steps { display: flex; flex-direction: column; padding-block: 12px 8px; }
+  .step-row { display: grid; grid-template-columns: 76px 1fr; gap: 20px; align-items: start; padding-block: 24px; border-top: 1px solid var(--border); }
+  .step-row:first-child { border-top: none; padding-top: 4px; }
+  .step-num { font-family: var(--font-display); font-style: italic; font-weight: 600; font-size: 42px; line-height: 1; color: var(--primary); }
+  .step-row:nth-child(2) .step-num { color: var(--accent); }
+  .step-row:nth-child(3) .step-num { color: var(--primary2); }
+  .step-body h3 { font-size: 17px; margin-bottom: 8px; }
+  .step-body p { font-size: 14px; color: var(--fg-muted); max-width: 54ch; }
+  @media (max-width: 560px) { .step-row { grid-template-columns: 48px 1fr; gap: 14px; } .step-num { font-size: 30px; } }
+
+  .pull-quote-band { background: var(--fg); color: var(--bg); padding-block: 44px; margin-block: 12px 40px; }
+  .pull-quote { max-width: 740px; margin: 0 auto; text-align: center; }
+  .pull-quote p { font-family: var(--font-display); font-style: italic; font-weight: 600; font-size: clamp(21px, 3.6vw, 32px); line-height: 1.35; }
+  .pull-quote .pq-mark { opacity: .5; }
+
+  .feat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding-block: 8px 8px; }
+  @media (max-width: 760px) { .feat-row { grid-template-columns: 1fr; } }
+  .feat { display: flex; gap: 12px; align-items: flex-start; padding: 16px; border-radius: 14px; background: var(--surface-alt); }
+  .feat .ic { font-size: 16px; width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; flex: none; }
+  .feat:nth-child(1) .ic { background: color-mix(in srgb, var(--primary) 18%, var(--surface)); }
+  .feat:nth-child(2) .ic { background: color-mix(in srgb, var(--accent) 20%, var(--surface)); }
+  .feat:nth-child(3) .ic { background: color-mix(in srgb, var(--primary2) 18%, var(--surface)); }
+  .feat h4 { font-size: 14.5px; font-weight: 600; margin-bottom: 3px; }
+  .feat p { font-size: 13px; color: var(--fg-muted); }
+
+  .section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; }
+  .section-head h2 { font-size: 24px; }
+  .section-head .sub { font-size: 14px; color: var(--fg-muted); }
+
+  .toolbar { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+  .search-field { flex: 1 1 240px; display: flex; align-items: center; gap: 8px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 0 14px; min-width: 0; }
+  .search-field .search-ic { font-size: 14px; opacity: .6; flex: none; }
+  .search-field input { flex: 1; min-width: 0; border: none; background: none; padding: 11px 0; font-size: 14.5px; color: var(--fg); font-family: inherit; }
+  .search-field input:focus { outline: none; }
+  #taskSort { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 0 14px; font-size: 14px; color: var(--fg); font-family: inherit; min-height: 44px; }
+  .task-count { font-size: 13px; color: var(--fg-muted); margin-bottom: 14px; }
+  .filters { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; background: var(--surface); border: 1px solid var(--border); color: var(--fg-muted); border-radius: 100px; padding: 7px 15px; font-size: 13.5px; font-weight: 500; }
+  .chip[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+  .task-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+  .task-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 12px; box-shadow: var(--shadow); min-width: 0; transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease; border-top: 3px solid transparent; }
+  .task-card.tc-watch { border-top-color: var(--primary); }
+  .task-card.tc-like { border-top-color: var(--accent); }
+  .task-card.tc-simple { border-top-color: var(--primary2); }
+  .task-card:hover { transform: translateY(-4px); border-color: color-mix(in srgb, var(--primary) 45%, var(--border)); box-shadow: 0 4px 10px rgba(22,35,28,.08), 0 18px 36px rgba(22,35,28,.14); }
+  .task-card .top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+  .task-card .top-left { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .task-card .cat { font-size: 11.5px; font-weight: 600; letter-spacing: .03em; text-transform: uppercase; padding: 4px 9px; border-radius: 100px; white-space: nowrap; }
+  .hot-badge { font-size: 11px; font-weight: 700; color: var(--accent); white-space: nowrap; background: color-mix(in srgb, var(--accent) 16%, var(--surface)); border-radius: 100px; padding: 3px 9px; }
+  .slots-tag { font-size: 12.5px; color: var(--fg-muted); white-space: nowrap; }
+  .slots-tag.low { color: var(--danger); font-weight: 600; }
+  .cat-like { background: color-mix(in srgb, var(--accent) 18%, var(--surface)); color: var(--accent); }
+  .cat-watch { background: color-mix(in srgb, var(--primary) 16%, var(--surface)); color: var(--primary); }
+  .cat-simple { background: color-mix(in srgb, var(--primary2) 16%, var(--surface)); color: var(--primary2); }
+  .task-card h3 { font-size: 16.5px; font-family: var(--font-body); font-weight: 600; line-height: 1.3; }
+  .task-card .meta { display: flex; align-items: center; gap: 14px; font-size: 13px; color: var(--fg-muted); }
+  .task-card .meta span { display: flex; align-items: center; gap: 5px; }
+  .task-card .price { font-family: var(--font-mono); font-weight: 700; font-size: 20px; color: var(--primary); }
+  .task-card .row-end { display: flex; align-items: center; justify-content: space-between; margin-top: auto; gap: 10px; }
+  .badge-done { font-size: 12.5px; font-weight: 600; color: var(--good); display: flex; align-items: center; gap: 5px; }
+  .badge-pending { font-size: 12.5px; font-weight: 600; color: var(--accent); display: flex; align-items: center; gap: 5px; }
+
+  .detail-head { display: flex; align-items: center; gap: 12px; margin-bottom: 22px; }
+  .back-btn { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px; font-size: 14px; color: var(--fg); }
+  .detail-card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 28px; box-shadow: var(--shadow); max-width: 620px; }
+  .detail-card .cat { margin-bottom: 14px; display: inline-block; }
+  .detail-card h2 { font-size: 24px; margin-bottom: 10px; }
+  .detail-card .price-lg { font-family: var(--font-mono); font-weight: 700; font-size: 28px; color: var(--primary); margin-bottom: 18px; }
+  .instructions { background: var(--surface-alt); border-radius: 12px; padding: 16px; font-size: 14.5px; color: var(--fg-muted); margin-bottom: 20px; line-height: 1.6; }
+  .instructions ol { margin: 8px 0 0; padding-left: 20px; }
+  .instructions li { margin-bottom: 4px; }
+  .toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 140%); background: var(--fg); color: var(--bg); padding: 13px 22px; border-radius: 100px; font-size: 14.5px; font-weight: 600; display: flex; align-items: center; gap: 9px; box-shadow: 0 14px 34px rgba(0,0,0,.25); z-index: 100; transition: transform .3s ease; max-width: calc(100% - 32px); }
+  .toast.show { transform: translate(-50%, 0); }
+
+  .online-badge { position: fixed; left: max(16px, env(safe-area-inset-left, 0px)); bottom: calc(20px + env(safe-area-inset-bottom, 0px)); display: flex; align-items: center; gap: 8px; background: var(--surface); border: 1px solid var(--border); border-radius: 100px; padding: 8px 14px; font-size: 12.5px; font-weight: 600; color: var(--fg-muted); box-shadow: var(--shadow); z-index: 90; }
+  .online-badge strong { color: var(--fg); }
+  .pulse-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--good); position: relative; flex: none; }
+  .pulse-dot::after { content: ""; position: absolute; inset: -4px; border-radius: 50%; background: var(--good); opacity: .5; animation: pulseRing 1.8s ease-out infinite; }
+  @keyframes pulseRing { 0% { transform: scale(.6); opacity: .5; } 100% { transform: scale(1.8); opacity: 0; } }
+  @media (max-width: 480px) { .online-badge { font-size: 11.5px; padding: 7px 12px; } }
+
+  .confetti-piece { position: fixed; width: 7px; height: 10px; border-radius: 2px; pointer-events: none; z-index: 150; animation: confettiPop .9s ease-out forwards; }
+  @keyframes confettiPop { 0% { transform: translate(0, 0) rotate(0deg); opacity: 1; } 100% { transform: translate(var(--dx), var(--dy)) rotate(var(--rot)); opacity: 0; } }
+
+  .wallet-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 20px; margin-bottom: 24px; }
+  @media (max-width: 760px) { .wallet-grid { grid-template-columns: 1fr; } }
+  .balance-hero { background: linear-gradient(155deg, color-mix(in srgb, var(--primary) 94%, black), var(--primary)); color: var(--primary-ink); border-radius: 20px; padding: 28px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 4px; position: relative; overflow: hidden; }
+  .balance-hero .label { font-size: 13.5px; opacity: .85; font-weight: 500; position: relative; }
+  .balance-hero .amount { font-family: var(--font-mono); font-size: 46px; font-weight: 700; margin-block: 6px 18px; position: relative; }
+  .balance-hero .btn-withdraw { align-self: flex-start; background: color-mix(in srgb, var(--primary-ink) 92%, transparent); color: var(--primary); font-weight: 700; position: relative; }
+
+  .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 24px; }
+  @media (max-width: 760px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+  .stat-tile { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 16px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 10px; }
+  .stat-tile .si { width: 32px; height: 32px; border-radius: 10px; display: grid; place-items: center; font-size: 15px; flex: none; }
+  .si-a { background: color-mix(in srgb, var(--primary) 16%, var(--surface)); }
+  .si-b { background: color-mix(in srgb, var(--accent) 18%, var(--surface)); }
+  .si-c { background: color-mix(in srgb, var(--good) 16%, var(--surface)); }
+  .stat-tile .sv { font-family: var(--font-mono); font-size: 21px; font-weight: 700; color: var(--fg); }
+  .stat-tile .sl { font-size: 12.5px; color: var(--fg-muted); }
+
+  .referral-card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 22px; box-shadow: var(--shadow); margin-bottom: 24px; display: flex; flex-direction: column; gap: 12px; }
+  .rc-head { display: flex; align-items: center; gap: 10px; }
+  .rc-ic { width: 34px; height: 34px; border-radius: 10px; background: color-mix(in srgb, var(--primary2) 16%, var(--surface)); display: grid; place-items: center; font-size: 16px; flex: none; }
+  .referral-card h3 { font-size: 16.5px; font-family: var(--font-body); font-weight: 600; }
+  .rc-text { font-size: 13.5px; color: var(--fg-muted); line-height: 1.55; max-width: 60ch; }
+  .referral-link-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .referral-link-row input { flex: 1 1 220px; min-width: 0; background: var(--surface-alt); border: 1px solid var(--border); border-radius: 10px; padding: 11px 13px; font-size: 13px; color: var(--fg); }
+
+  .ledger { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; overflow: hidden; box-shadow: var(--shadow); }
+  .ledger-empty { background: var(--surface); border: 1px dashed var(--border); border-radius: 20px; padding: 36px 24px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .ledger-empty .le-ic { font-size: 26px; opacity: .6; }
+  .ledger-empty h3 { font-size: 16px; }
+  .ledger-empty p { font-size: 13.5px; color: var(--fg-muted); max-width: 32ch; margin-bottom: 6px; }
+  .ledger-row { display: grid; grid-template-columns: 1fr auto auto; gap: 14px; align-items: center; padding: 14px 20px; border-top: 1px solid var(--border); }
+  .ledger-row:first-child { border-top: none; }
+  .ledger-row .ti { min-width: 0; }
+  .ledger-row .tt { font-size: 14.5px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ledger-row .td { font-size: 12.5px; color: var(--fg-muted); }
+  .ledger-row .ta { font-family: var(--font-mono); font-weight: 600; font-size: 14.5px; white-space: nowrap; }
+  .ta.pos { color: var(--good); }
+  .ta.neg { color: var(--danger); }
+  .ledger-row .st { font-size: 11.5px; font-weight: 600; padding: 4px 9px; border-radius: 100px; white-space: nowrap; }
+  .st-done { background: color-mix(in srgb, var(--good) 16%, var(--surface)); color: var(--good); }
+  .st-pending { background: color-mix(in srgb, var(--accent) 18%, var(--surface)); color: var(--accent); }
+
+  .withdraw-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 24px; margin-top: 24px; max-width: 420px; box-shadow: var(--shadow); }
+  .withdraw-panel h3 { font-size: 17px; margin-bottom: 6px; }
+  .withdraw-panel .ps { font-size: 13.5px; color: var(--fg-muted); margin-bottom: 18px; line-height: 1.5; }
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 12.5px; font-weight: 600; color: var(--fg-muted); margin-bottom: 6px; }
+  .field input { width: 100%; background: var(--surface-alt); border: 1px solid var(--border); border-radius: 10px; padding: 11px 13px; font-size: 14.5px; color: var(--fg); font-family: var(--font-mono); }
+  .notice { display: flex; gap: 9px; background: color-mix(in srgb, var(--accent) 12%, var(--surface)); border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border)); border-radius: 10px; padding: 11px 13px; font-size: 12.5px; color: var(--fg-muted); margin-top: 14px; line-height: 1.5; }
+  .err-notice { background: color-mix(in srgb, var(--danger) 12%, var(--surface)); border-color: color-mix(in srgb, var(--danger) 35%, var(--border)); color: var(--danger); }
+
+  footer { border-top: 1px solid var(--border); padding-block: 22px max(22px, env(safe-area-inset-bottom, 0px)); font-size: 12.5px; color: var(--fg-muted); text-align: center; }
+
+  /* ---- auth gate ---- */
+  #authView { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px 16px; }
+  .auth-card { width: 100%; max-width: 380px; background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 28px; box-shadow: var(--shadow); }
+  .auth-card .brand { justify-content: center; margin-bottom: 18px; }
+  .auth-card h2 { font-size: 21px; text-align: center; margin-bottom: 4px; }
+  .auth-card .sub { font-size: 13.5px; color: var(--fg-muted); text-align: center; margin-bottom: 22px; }
+  .auth-tabs { display: flex; gap: 6px; background: var(--surface-alt); border-radius: 100px; padding: 4px; margin-bottom: 20px; }
+  .auth-tabs button { flex: 1; border: none; background: none; border-radius: 100px; padding: 9px; font-size: 13.5px; font-weight: 600; color: var(--fg-muted); }
+  .auth-tabs button[aria-pressed="true"] { background: var(--surface); color: var(--fg); box-shadow: var(--shadow); }
+  .auth-card .field input { font-family: var(--font-body); }
+  .auth-err { display: none; }
+</style>
+</head>
+<body>
+
+<div id="authView">
+  <div class="auth-card">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 30 30" role="img" aria-label="Гривня">
+        <rect width="30" height="30" rx="9" fill="var(--primary)"/>
+        <text x="15" y="21.5" text-anchor="middle" font-family="var(--font-mono)" font-weight="700" font-size="17" fill="var(--primary-ink)">₴</text>
+        <circle cx="23" cy="7" r="2.3" fill="var(--accent)"/>
+      </svg>
+      <span class="brand-word">Гривня</span> <span aria-hidden="true" style="font-size:16px">🇺🇦</span>
+    </div>
+    <h2 id="authTitle">Вхід в акаунт</h2>
+    <p class="sub">Тестова версія: гроші нараховуються в акаунті після перевірки адміном. Виведення поки лише заявкою — без реального переказу коштів.</p>
+    <div class="auth-tabs">
+      <button type="button" data-tab="login" aria-pressed="true">Вхід</button>
+      <button type="button" data-tab="register" aria-pressed="false">Реєстрація</button>
+    </div>
+    <div class="field"><label for="authEmail">Email</label><input type="email" id="authEmail" autocomplete="email"></div>
+    <div class="field"><label for="authPassword">Пароль</label><input type="password" id="authPassword" autocomplete="current-password"></div>
+    <div class="notice err-notice auth-err" id="authErr"></div>
+    <button class="btn btn-primary btn-block" id="authSubmit" type="button">Увійти</button>
+  </div>
+</div>
+
+<div id="appView" hidden>
+  <div class="flag-bar" aria-hidden="true"></div>
+  <nav class="topbar">
+    <div class="inner">
+      <div class="brand">
+        <svg class="brand-mark" viewBox="0 0 30 30" role="img" aria-label="Гривня">
+          <rect width="30" height="30" rx="9" fill="var(--primary)"/>
+          <text x="15" y="21.5" text-anchor="middle" font-family="var(--font-mono)" font-weight="700" font-size="17" fill="var(--primary-ink)">₴</text>
+          <circle cx="23" cy="7" r="2.3" fill="var(--accent)"/>
+        </svg>
+        <span class="brand-word">Гривня</span> <span aria-hidden="true" style="font-size:16px">🇺🇦</span>
+      </div>
+      <div class="navlinks" role="tablist" aria-label="Розділи">
+        <button data-nav="home" aria-current="page">Головна</button>
+        <button data-nav="tasks">Завдання</button>
+        <button data-nav="wallet">Гаманець</button>
+      </div>
+      <div class="nav-right">
+        <button class="theme-toggle" id="themeToggle" aria-label="Перемкнути тему" title="Перемкнути тему">🌙</button>
+        <button class="icon-btn" id="logoutBtn" aria-label="Вийти" title="Вийти">↪</button>
+        <div class="nav-balance"><span class="dot">₴</span><span class="amt mono" id="navBalance">0</span></div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="grain" aria-hidden="true"></div>
+
+  <main>
+    <section data-view="home" class="active">
+      <div class="hero-band bleed">
+        <div class="hero wrap">
+          <span class="hero-watermark" aria-hidden="true">₴</span>
+          <div>
+            <span class="eyebrow">● Тестова версія</span>
+            <h1>Прості дії. <span class="accent">Реальна</span> оплата.</h1>
+            <p class="lede">Виконуй короткі завдання — постав лайк, перегляни ролик — і надсилай на перевірку. Адміністратор підтверджує виконання, і гроші з'являються на балансі.</p>
+            <div class="cta-row">
+              <button class="btn btn-primary" data-nav="tasks">Переглянути завдання →</button>
+              <button class="btn btn-ghost" data-nav="wallet">Мій гаманець</button>
+            </div>
+          </div>
+          <div class="hero-card">
+            <span class="stamp" aria-hidden="true">Чесні<br>ціни</span>
+            <span class="label">Завдання дня</span>
+            <div class="num mono" id="homeTodayTotal">—</div>
+            <div id="homeMiniTasks"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="steps">
+        <div class="step-row"><span class="step-num">01</span><div class="step-body"><h3>Обери завдання</h3><p>Лайк, перегляд ролика чи проста дія — кожне з чесно вказаною ціною і часом виконання.</p></div></div>
+        <div class="step-row"><span class="step-num">02</span><div class="step-body"><h3>Виконай і надішли на перевірку</h3><p>Зроби дію і натисни «Підтвердити» — заявку реально перегляне адміністратор, зазвичай протягом 5–15 хв.</p></div></div>
+        <div class="step-row"><span class="step-num">03</span><div class="step-body"><h3>Гроші на балансі</h3><p>Після підтвердження сума з'являється в гаманці. Виведення — заявкою, поки без автооплати (платіжний провайдер ще не підключений).</p></div></div>
+      </div>
+
+      <div class="pull-quote-band bleed">
+        <div class="pull-quote"><p><span class="pq-mark">«</span>Чесно. Просто. Без прихованих умов.<span class="pq-mark">»</span></p></div>
+      </div>
+
+      <div class="feat-row">
+        <div class="feat"><span class="ic">🕵️</span><div><h4>Реальна перевірка</h4><p>Кожну заявку переглядає людина, перш ніж гроші потраплять на баланс.</p></div></div>
+        <div class="feat"><span class="ic">🧾</span><div><h4>Прозора історія</h4><p>Кожне нарахування — окремий рядок у гаманці з датою й статусом.</p></div></div>
+        <div class="feat"><span class="ic">🔒</span><div><h4>Чесні умови</h4><p>Ціна і час завдання видно заздалегідь, без прихованих умов.</p></div></div>
+      </div>
+    </section>
+
+    <section data-view="tasks">
+      <div class="section-head"><div><span class="kicker">Маркетплейс</span><h2>Завдання</h2><div class="sub">Обери завдання — ціна і час вказані чесно, без прихованих умов</div></div></div>
+      <div class="toolbar">
+        <div class="search-field"><span class="search-ic">🔍</span><input type="search" id="taskSearch" placeholder="Пошук завдання…" aria-label="Пошук завдання"></div>
+        <select id="taskSort" aria-label="Сортування">
+          <option value="default">За замовчуванням</option>
+          <option value="price-desc">Спочатку дорожчі</option>
+          <option value="price-asc">Спочатку дешевші</option>
+        </select>
+      </div>
+      <div class="filters" id="filters">
+        <button class="chip" data-filter="all" aria-pressed="true"><span aria-hidden="true">📋</span>Усі</button>
+        <button class="chip" data-filter="like" aria-pressed="false"><span aria-hidden="true">❤️</span>Лайки</button>
+        <button class="chip" data-filter="watch" aria-pressed="false"><span aria-hidden="true">🎬</span>Перегляди</button>
+        <button class="chip" data-filter="simple" aria-pressed="false"><span aria-hidden="true">⚡</span>Прості дії</button>
+      </div>
+      <div class="task-count" id="taskCount"></div>
+      <div class="task-grid" id="taskGrid"></div>
+    </section>
+
+    <section data-view="task-detail">
+      <div class="detail-head"><button class="back-btn" data-nav="tasks">← До завдань</button></div>
+      <div class="detail-card" id="detailCard"></div>
+    </section>
+
+    <section data-view="wallet">
+      <div class="section-head"><div><span class="kicker kicker-alt">Фінанси</span><h2>Гаманець</h2><div class="sub">Баланс, історія нарахувань і заявки на виведення</div></div></div>
+      <div class="stats-grid" id="statsGrid"></div>
+      <div class="wallet-grid">
+        <div class="balance-hero">
+          <span class="label">Поточний баланс</span>
+          <div class="amount mono" id="walletBalance">0 ₴</div>
+          <button class="btn btn-withdraw" id="openWithdraw">Вивести кошти</button>
+        </div>
+        <div class="referral-card" style="margin-bottom:0">
+          <div class="rc-head"><span class="rc-ic">🤝</span><h3>Запроси друга</h3></div>
+          <p class="rc-text">Поділись посиланням — коли друг зареєструється і виконає перше завдання, тобі нарахують <strong>+100 ₴</strong>. У тестовій версії бонус нараховується вручну: автоматичне відстеження запрацює пізніше.</p>
+          <div class="referral-link-row">
+            <input type="text" id="refLinkInput" class="mono" readonly aria-label="Реферальне посилання">
+            <button class="btn btn-primary" id="copyRefBtn" type="button">Скопіювати</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-head"><div><h2 style="font-size:19px">Історія</h2></div></div>
+      <div class="ledger" id="ledger"></div>
+      <div class="ledger-empty" id="ledgerEmpty" hidden>
+        <span class="le-ic">🧾</span>
+        <h3>Ще немає жодного нарахування</h3>
+        <p>Виконай перше завдання — воно з'явиться тут одразу після підтвердження адміном.</p>
+        <button class="btn btn-primary" data-nav="tasks">Обрати перше завдання</button>
+      </div>
+
+      <div class="withdraw-panel" id="withdrawPanel" hidden>
+        <h3>💳 Заявка на виведення</h3>
+        <p class="ps">Вкажи суму і картку — заявку буде видно в історії зі статусом «В обробці».</p>
+        <form id="withdrawForm">
+          <div class="field"><label for="wAmount">Сума (₴)</label><input type="number" id="wAmount" min="1" step="1" required></div>
+          <div class="field"><label for="wCard">Номер картки</label><input type="text" id="wCard" inputmode="numeric" maxlength="19" placeholder="0000 0000 0000 0000" required></div>
+          <button class="btn btn-primary btn-block" type="submit">Надіслати заявку</button>
+        </form>
+        <div class="notice">⚠ Номер картки нікуди не передається — це демонстраційне поле. Платіжний провайдер ще не підключений, тож заявка отримує статус «В обробці», без фактичного переказу коштів.</div>
+      </div>
+    </section>
+  </main>
+
+  <footer><span class="brand-word">Гривня</span> 🇺🇦 · тестова версія для перевірки концепції · ціни орієнтовні</footer>
+
+  <div class="online-badge" title="Реальна кількість завдань зі списку, які ти ще не надіслав(ла) на перевірку.">
+    <span class="pulse-dot" aria-hidden="true"></span>
+    <span>Доступно завдань зараз: <strong id="onlineCount">0</strong></span>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  var state = { user: null, tasks: [], wallet: { balance: 0, ledger: [] }, filter: "all", query: "", sort: "default", currentTaskId: null };
+
+  // ---------- API helper ----------
+  async function api(path, opts) {
+    var res = await fetch("/api" + path, Object.assign({ headers: { "Content-Type": "application/json" } }, opts || {}));
+    var data = await res.json().catch(function () { return {}; });
+    if (!res.ok) throw new Error(data.error || "Помилка запиту");
+    return data;
+  }
+
+  // ---------- theme ----------
+  var THEME_KEY = "grivnya_theme_v1";
+  function loadThemePref() { try { return localStorage.getItem(THEME_KEY) || "system"; } catch (e) { return "system"; } }
+  function saveThemePref(t) { try { localStorage.setItem(THEME_KEY, t); } catch (e) {} }
+  function systemPrefersDark() { return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches; }
+  function applyTheme(t) {
+    var root = document.documentElement;
+    if (t === "system") root.removeAttribute("data-theme"); else root.setAttribute("data-theme", t);
+    var isDark = t === "dark" || (t === "system" && systemPrefersDark());
+    document.getElementById("themeToggle").textContent = isDark ? "☀️" : "🌙";
+  }
+  applyTheme(loadThemePref());
+  document.getElementById("themeToggle").addEventListener("click", function () {
+    var cur = loadThemePref();
+    var isDark = cur === "dark" || (cur === "system" && systemPrefersDark());
+    var next = isDark ? "light" : "dark";
+    saveThemePref(next); applyTheme(next);
+  });
+
+  function fmt(n) { return (n || 0).toLocaleString("uk-UA"); }
+
+  function showToast(msg) {
+    var t = document.getElementById("toast");
+    t.textContent = msg; t.classList.add("show");
+    clearTimeout(t._timer);
+    t._timer = setTimeout(function () { t.classList.remove("show"); }, 2600);
+  }
+
+  function fireConfetti() {
+    if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    var colors = ["var(--primary)", "var(--accent)", "var(--primary2)", "var(--good)"];
+    var originX = window.innerWidth / 2, originY = window.innerHeight - 90;
+    for (var i = 0; i < 14; i++) {
+      var el = document.createElement("span");
+      el.className = "confetti-piece";
+      var angle = -Math.PI / 2 + (Math.random() - 0.5) * 1.6;
+      var dist = 60 + Math.random() * 90;
+      el.style.left = originX + "px"; el.style.top = originY + "px";
+      el.style.background = colors[i % colors.length];
+      el.style.setProperty("--dx", (Math.cos(angle) * dist) + "px");
+      el.style.setProperty("--dy", (Math.sin(angle) * dist) + "px");
+      el.style.setProperty("--rot", (Math.random() * 360) + "deg");
+      document.body.appendChild(el);
+      setTimeout(function (node) { return function () { node.remove(); }; }(el), 950);
+    }
+  }
+
+  // ---------- auth ----------
+  var authTab = "login";
+  document.querySelectorAll(".auth-tabs button").forEach(function (b) {
+    b.addEventListener("click", function () {
+      authTab = b.dataset.tab;
+      document.querySelectorAll(".auth-tabs button").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+      document.getElementById("authTitle").textContent = authTab === "login" ? "Вхід в акаунт" : "Створити акаунт";
+      document.getElementById("authSubmit").textContent = authTab === "login" ? "Увійти" : "Зареєструватись";
+      document.getElementById("authErr").style.display = "none";
+    });
+  });
+
+  document.getElementById("authSubmit").addEventListener("click", async function () {
+    var email = document.getElementById("authEmail").value.trim();
+    var password = document.getElementById("authPassword").value;
+    var errBox = document.getElementById("authErr");
+    errBox.style.display = "none";
+    try {
+      var data = await api("/" + authTab, { method: "POST", body: JSON.stringify({ email: email, password: password }) });
+      state.user = data.user;
+      await enterApp();
+    } catch (e) {
+      errBox.textContent = e.message;
+      errBox.style.display = "flex";
+    }
+  });
+
+  document.getElementById("logoutBtn").addEventListener("click", async function () {
+    await api("/logout", { method: "POST" });
+    stopPolling();
+    state.user = null;
+    document.getElementById("appView").hidden = true;
+    document.getElementById("authView").style.display = "flex";
+  });
+
+  async function enterApp() {
+    document.getElementById("authView").style.display = "none";
+    document.getElementById("appView").hidden = false;
+    document.getElementById("refLinkInput").value = location.origin + "/?ref=" + state.user.ref_code;
+    await Promise.all([loadTasks(), loadWallet()]);
+    renderNav(); renderHome(); go("home");
+    startPolling();
+  }
+
+  // ---------- data loading ----------
+  async function loadTasks() {
+    var data = await api("/tasks");
+    state.tasks = data.tasks;
+  }
+  async function loadWallet() {
+    var prevBalance = state.wallet.balance;
+    var data = await api("/wallet");
+    if (state.user && data.balance > prevBalance && prevBalance !== undefined && document.getElementById("appView").hidden === false) {
+      fireConfetti();
+      showToast("✓ Перевірку пройдено — баланс оновлено");
+    }
+    state.wallet = data;
+  }
+
+  var pollTimer = null;
+  function startPolling() {
+    stopPolling();
+    pollTimer = setInterval(async function () {
+      try {
+        await loadTasks();
+        await loadWallet();
+        renderNav();
+        var active = document.querySelector("section[data-view].active");
+        if (active && active.dataset.view === "tasks") renderTasks();
+        if (active && active.dataset.view === "wallet") renderWallet();
+      } catch (e) { /* ignore transient poll errors */ }
+    }, 20000);
+  }
+  function stopPolling() { if (pollTimer) clearInterval(pollTimer); pollTimer = null; }
+
+  // ---------- nav ----------
+  function renderNav() {
+    document.getElementById("navBalance").textContent = fmt(state.wallet.balance) + " ₴";
+    var left = state.tasks.filter(function (t) { return t.myStatus === "available"; }).length;
+    document.getElementById("onlineCount").textContent = fmt(left);
+  }
+
+  document.addEventListener("click", function (e) {
+    var navBtn = e.target.closest("[data-nav]");
+    if (navBtn) go(navBtn.dataset.nav);
+  });
+
+  function go(view) {
+    document.querySelectorAll("section[data-view]").forEach(function (s) { s.classList.toggle("active", s.dataset.view === view); });
+    document.querySelectorAll(".navlinks button").forEach(function (b) {
+      if (b.dataset.nav === view) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current");
+    });
+    if (view === "tasks") renderTasks();
+    if (view === "wallet") renderWallet();
+    if (view === "home") renderHome();
+    window.scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
+  }
+
+  // ---------- home ----------
+  function renderHome() {
+    var today = ["watch", "like", "simple"].map(function (c) {
+      return state.tasks.filter(function (t) { return t.cat === c && t.myStatus === "available"; })[0];
+    }).filter(Boolean);
+    var total = today.reduce(function (a, t) { return a + t.price; }, 0);
+    document.getElementById("homeTodayTotal").textContent = fmt(total) + " ₴";
+    document.getElementById("homeMiniTasks").innerHTML = today.map(function (t) {
+      return '<div class="mini-task"><span class="ic">' + t.icon + '</span><div class="t"><div class="tt">' + t.title + '</div></div><div class="p mono">+' + t.price + '₴</div></div>';
+    }).join("");
+  }
+
+  var CAT_LABEL = { like: "Лайк", watch: "Перегляд", simple: "Проста дія" };
+  var CAT_CLASS = { like: "cat-like", watch: "cat-watch", simple: "cat-simple" };
+
+  // ---------- tasks ----------
+  function renderTasks() {
+    var grid = document.getElementById("taskGrid");
+    var q = state.query.trim().toLocaleLowerCase("uk-UA");
+    var list = state.tasks.filter(function (t) {
+      if (state.filter !== "all" && t.cat !== state.filter) return false;
+      if (q && t.title.toLocaleLowerCase("uk-UA").indexOf(q) === -1) return false;
+      return true;
+    });
+    if (state.sort === "price-desc") list = list.slice().sort(function (a, b) { return b.price - a.price; });
+    else if (state.sort === "price-asc") list = list.slice().sort(function (a, b) { return a.price - b.price; });
+
+    document.getElementById("taskCount").textContent = list.length + (list.length === 1 ? " завдання" : " завдань") + (q ? " за запитом «" + state.query.trim() + "»" : "");
+
+    grid.innerHTML = list.map(function (t) {
+      var done = t.myStatus === "approved";
+      var pend = t.myStatus === "pending";
+      var slotsHtml = t.slotsLeft === null ? "" :
+        '<span class="' + (t.slotsLeft <= 3 ? "slots-tag low" : "slots-tag") + '">⏳ Місць: ' + t.slotsLeft + ' з ' + t.slots + '</span>';
+      var statusBadge = done ? '<span class="badge-done">✓ Виконано</span>' : pend ? '<span class="badge-pending">🕵️ На перевірці</span>' : '';
+      var btnLabel = done ? "Виконано" : pend ? "На перевірці" : "Виконати";
+      return '<div class="task-card tc-' + t.cat + '">' +
+        '<div class="top"><div class="top-left"><span class="cat ' + CAT_CLASS[t.cat] + '">' + CAT_LABEL[t.cat] + '</span>' +
+        (t.price >= 200 ? '<span class="hot-badge">🔥 Вигідно</span>' : '') + '</div>' + statusBadge + '</div>' +
+        '<h3>' + t.title + '</h3>' +
+        '<div class="meta"><span>⏱ ' + t.time + '</span>' + slotsHtml + '</div>' +
+        '<div class="row-end"><span class="price mono">+' + t.price + ' ₴</span>' +
+        '<button class="btn ' + ((done || pend) ? 'btn-ghost" disabled' : 'btn-primary') + '" data-open-task="' + t.id + '">' + btnLabel + '</button></div>' +
+        '</div>';
+    }).join("") || '<p style="color:var(--fg-muted)">Нічого не знайшлося — спробуй інший запит або категорію.</p>';
+  }
+
+  document.getElementById("filters").addEventListener("click", function (e) {
+    var chip = e.target.closest(".chip");
+    if (!chip) return;
+    state.filter = chip.dataset.filter;
+    document.querySelectorAll(".chip").forEach(function (c) { c.setAttribute("aria-pressed", String(c === chip)); });
+    renderTasks();
+  });
+  document.getElementById("taskSearch").addEventListener("input", function (e) { state.query = e.target.value; renderTasks(); });
+  document.getElementById("taskSort").addEventListener("change", function (e) { state.sort = e.target.value; renderTasks(); });
+  document.getElementById("taskGrid").addEventListener("click", function (e) {
+    var btn = e.target.closest("[data-open-task]");
+    if (!btn) return;
+    openTaskDetail(btn.dataset.openTask);
+  });
+
+  // ---------- task detail ----------
+  function openTaskDetail(id) {
+    var t = state.tasks.filter(function (x) { return x.id === id; })[0];
+    if (!t) return;
+    state.currentTaskId = id;
+    var card = document.getElementById("detailCard");
+    var isWatch = t.cat === "watch";
+    var done = t.myStatus === "approved";
+    var pend = t.myStatus === "pending";
+    var instructions = isWatch
+      ? "<ol><li>Натисни «Відкрити відео ↗» — відео відкриється в новій вкладці.</li><li>Переглянь його.</li><li>Повернись сюди й натисни «Підтвердити виконання».</li><li>Заявку перевірить адміністратор, зазвичай протягом 5–15 хв — лише тоді гроші з'являться на балансі.</li></ol>"
+      : "<ol><li>Натисни «Відкрити ↗» — посилання відкриється в новій вкладці.</li><li>Виконай дію: " + t.title.toLowerCase() + ".</li><li>Повернись сюди і натисни «Підтвердити виконання».</li><li>Заявку перевірить адміністратор, зазвичай протягом 5–15 хв — лише тоді гроші з'являться на балансі.</li></ol>";
+    var slotsNote = t.slotsLeft === null ? "" :
+      '<div class="' + (t.slotsLeft <= 3 ? "slots-tag low" : "slots-tag") + '" style="margin-bottom:14px">⏳ Обмежена кількість виконань: залишилось ' + t.slotsLeft + ' з ' + t.slots + '</div>';
+    var reviewNote = pend ? '<div class="slots-tag" style="margin-bottom:14px">🕵️ Заявку надіслано, чекає на перевірку адміністратора.</div>' : "";
+
+    card.innerHTML =
+      '<span class="cat ' + CAT_CLASS[t.cat] + '">' + CAT_LABEL[t.cat] + '</span>' +
+      '<h2>' + t.title + '</h2>' +
+      '<div class="price-lg mono">+' + t.price + ' ₴</div>' +
+      slotsNote + reviewNote +
+      '<a class="btn btn-ghost" href="' + t.link + '" target="_blank" rel="noopener" style="margin-bottom:16px">' + (isWatch ? "Відкрити відео ↗" : "Відкрити ↗") + '</a>' +
+      '<div class="instructions"><strong>Як виконати</strong>' + instructions + '</div>' +
+      '<button class="btn btn-primary btn-block" id="confirmBtn"' + ((done || pend) ? " disabled" : "") + '>' +
+      (done ? "Нараховано ✓" : pend ? "На перевірці…" : "Підтвердити виконання") + '</button>';
+
+    go("task-detail");
+  }
+
+  document.getElementById("detailCard").addEventListener("click", async function (e) {
+    if (!(e.target && e.target.id === "confirmBtn" && !e.target.disabled)) return;
+    e.target.disabled = true;
+    try {
+      await api("/tasks/" + state.currentTaskId + "/submit", { method: "POST" });
+      await loadTasks();
+      renderNav();
+      showToast("Надіслано на перевірку адміну — зазвичай 5–15 хв");
+      openTaskDetail(state.currentTaskId);
+    } catch (err) {
+      showToast(err.message);
+      e.target.disabled = false;
+    }
+  });
+
+  // ---------- wallet ----------
+  function renderWallet() {
+    document.getElementById("walletBalance").textContent = fmt(state.wallet.balance) + " ₴";
+    var pendingCount = state.tasks.filter(function (t) { return t.myStatus === "pending"; }).length;
+    var doneCount = state.tasks.filter(function (t) { return t.myStatus === "approved"; }).length;
+    document.getElementById("statsGrid").innerHTML =
+      statTile("si-a", "✓", doneCount, "виконано завдань") +
+      statTile("si-b", "🕵️", pendingCount, "на перевірці") +
+      statTile("si-c", "₴", fmt(state.wallet.balance), "поточний баланс");
+
+    var box = document.getElementById("ledger");
+    var empty = document.getElementById("ledgerEmpty");
+    if (state.wallet.ledger.length === 0) { box.hidden = true; empty.hidden = false; }
+    else {
+      box.hidden = false; empty.hidden = true;
+      box.innerHTML = state.wallet.ledger.map(function (tx) {
+        var isNeg = tx.amount < 0;
+        return '<div class="ledger-row"><div class="ti"><div class="tt">' + tx.title + '</div><div class="td">' + tx.date + '</div></div>' +
+          '<span class="st ' + (tx.status === "done" ? "st-done" : "st-pending") + '">' + (tx.status === "done" ? "Нараховано" : "В обробці") + '</span>' +
+          '<span class="ta ' + (isNeg ? "neg" : "pos") + ' mono">' + (isNeg ? "" : "+") + tx.amount + ' ₴</span></div>';
+      }).join("");
+    }
+  }
+  function statTile(cls, ic, val, label) {
+    return '<div class="stat-tile"><span class="si ' + cls + '">' + ic + '</span><span class="sv">' + val + '</span><span class="sl">' + label + '</span></div>';
+  }
+
+  document.getElementById("openWithdraw").addEventListener("click", function () {
+    if (state.wallet.balance <= 0) { showToast("Спочатку заробили хоча б щось"); return; }
+    var panel = document.getElementById("withdrawPanel");
+    panel.hidden = !panel.hidden;
+    if (!panel.hidden) {
+      document.getElementById("wAmount").max = state.wallet.balance;
+      panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  });
+
+  document.getElementById("withdrawForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    var amount = parseInt(document.getElementById("wAmount").value, 10);
+    if (!amount || amount <= 0) return;
+    try {
+      await api("/withdraw", { method: "POST", body: JSON.stringify({ amount: amount }) });
+      await loadWallet();
+      renderNav(); renderWallet();
+      document.getElementById("withdrawForm").reset();
+      document.getElementById("withdrawPanel").hidden = true;
+      showToast("Заявку надіслано — статус «В обробці»");
+    } catch (err) {
+      showToast(err.message);
+    }
+  });
+
+  document.getElementById("copyRefBtn").addEventListener("click", function () {
+    var input = document.getElementById("refLinkInput");
+    input.select();
+    try {
+      navigator.clipboard.writeText(input.value).then(function () { showToast("Посилання скопійовано"); });
+    } catch (e) {
+      document.execCommand("copy"); showToast("Посилання скопійовано");
+    }
+  });
+
+  // ---------- boot ----------
+  api("/me").then(function (data) {
+    state.user = data.user;
+    enterApp();
+  }).catch(function () {
+    document.getElementById("authView").style.display = "flex";
+  });
+})();
+</script>
+</body>
+</html>
