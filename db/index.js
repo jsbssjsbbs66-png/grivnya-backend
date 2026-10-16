@@ -38,7 +38,8 @@ CREATE TABLE IF NOT EXISTS submissions (
   status TEXT NOT NULL DEFAULT 'pending', -- pending | approved | rejected
   amount INTEGER NOT NULL,
   submitted_at TEXT NOT NULL DEFAULT (datetime('now')),
-  reviewed_at TEXT
+  reviewed_at TEXT,
+  auto_approved INTEGER NOT NULL DEFAULT 0 -- 1 when the test-mode timeout approved it, not a human admin
 );
 CREATE INDEX IF NOT EXISTS idx_submissions_task ON submissions(task_id, status);
 CREATE INDEX IF NOT EXISTS idx_submissions_user ON submissions(user_id);
@@ -51,5 +52,11 @@ CREATE TABLE IF NOT EXISTS withdrawals (
   requested_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 `);
+
+// Safe migration for databases created before the auto_approved column existed.
+const submissionCols = db.prepare("PRAGMA table_info(submissions)").all().map((c) => c.name);
+if (!submissionCols.includes("auto_approved")) {
+  db.exec("ALTER TABLE submissions ADD COLUMN auto_approved INTEGER NOT NULL DEFAULT 0;");
+}
 
 module.exports = db;

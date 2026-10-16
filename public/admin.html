@@ -17,6 +17,7 @@
   button.primary { background: var(--primary); color:#fff; border-color: var(--primary); }
   button.danger { background: var(--danger); color:#fff; border-color: var(--danger); }
   button:disabled { opacity:.5; cursor:default; }
+  .auto-banner { background:#3a2d12; border:1px solid #6b5420; color:#e8c877; border-radius:10px; padding:10px 14px; font-size:13.5px; margin-bottom:14px; }
   .stats { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:18px; }
   .stat { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:12px 16px; flex:1; min-width:120px; }
   .stat b { display:block; font-size:22px; font-family: ui-monospace, monospace; }
@@ -44,7 +45,8 @@
 
   <div id="panelView" hidden>
     <h1>Перевірка завдань <button id="logoutBtn">Вийти</button></h1>
-    <p class="sub">Заявки чекають реального підтвердження людиною — жодне нарахування не відбувається автоматично.</p>
+    <p class="sub">Підтверджуй або відхиляй заявки вручну — так вони зараховуються по-справжньому, після твоєї перевірки.</p>
+    <div id="autoApproveBanner" class="auto-banner" hidden></div>
     <div class="stats" id="stats"></div>
     <div class="card">
       <div id="list"></div>
@@ -99,7 +101,16 @@
         stat(stats.users, "користувачів") +
         stat(stats.pending, "на перевірці") +
         stat(stats.approved, "підтверджено") +
+        stat(stats.autoApproved, "з них авто") +
         stat(stats.withdrawalsPending, "заявок на виведення (" + fmt(stats.withdrawalsPendingAmount) + " ₴)");
+
+      var banner = document.getElementById("autoApproveBanner");
+      if (banner) {
+        banner.hidden = !stats.autoApproveSeconds;
+        banner.textContent = stats.autoApproveSeconds
+          ? "⏱ Тестовий режим: заявки, які ти не встиг переглянути за " + stats.autoApproveSeconds + " с, підтверджуються автоматично."
+          : "";
+      }
 
       var data = await api("/submissions?status=pending");
       var list = document.getElementById("list");

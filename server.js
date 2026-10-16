@@ -5,11 +5,15 @@ const cookieParser = require("cookie-parser");
 
 const db = require("./db");
 const { seedTasks } = require("./db/seed");
+const { startAutoApproveLoop } = require("./db/auto-approve");
 const apiRoutes = require("./routes/api");
 const adminRoutes = require("./routes/admin");
 
 // Make sure the task catalog is in the DB before serving requests.
 seedTasks();
+
+// Test-mode only: see db/auto-approve.js. No-op unless AUTO_APPROVE_SECONDS is set.
+startAutoApproveLoop();
 
 const app = express();
 app.disable("x-powered-by");

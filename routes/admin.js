@@ -30,7 +30,7 @@ router.post("/logout", (req, res) => {
 router.get("/submissions", requireAdmin, (req, res) => {
   const status = (req.query.status || "pending").toString();
   const rows = db.prepare(`
-    SELECT s.id, s.status, s.amount, s.submitted_at, s.reviewed_at,
+    SELECT s.id, s.status, s.amount, s.submitted_at, s.reviewed_at, s.auto_approved,
            u.email AS user_email, t.id AS task_id, t.title AS task_title, t.cat, t.link
     FROM submissions s
     JOIN users u ON u.id = s.user_id
@@ -71,8 +71,14 @@ router.get("/stats", requireAdmin, (req, res) => {
   const users = db.prepare("SELECT COUNT(*) AS n FROM users").get().n;
   const pending = db.prepare("SELECT COUNT(*) AS n FROM submissions WHERE status = 'pending'").get().n;
   const approved = db.prepare("SELECT COUNT(*) AS n FROM submissions WHERE status = 'approved'").get().n;
+  const autoApproved = db.prepare("SELECT COUNT(*) AS n FROM submissions WHERE status = 'approved' AND auto_approved = 1").get().n;
   const withdrawalsPending = db.prepare("SELECT COUNT(*) AS n, COALESCE(SUM(amount),0) AS sum FROM withdrawals WHERE status = 'processing'").get();
-  res.json({ users, pending, approved, withdrawalsPending: withdrawalsPending.n, withdrawalsPendingAmount: withdrawalsPending.sum });
+  res.json({
+    users, pending, approved, autoApproved,
+    withdrawalsPending: withdrawalsPending.n,
+    withdrawalsPendingAmount: withdrawalsPending.sum,
+    autoApproveSeconds: require("../db/auto-approve").autoApproveSeconds()
+  });
 });
 
 module.exports = router;
